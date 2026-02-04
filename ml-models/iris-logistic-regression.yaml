@@ -1,0 +1,50 @@
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: s3creds
+  namespace: ml-serving
+spec:
+  encryptedData:
+    AWS_ACCESS_KEY_ID: AgB9ZTk/25zc+cuGQEKucIq2CRQRnbU3gtTziOFC3uga1cKksF/xJuCxu7/VqF/lERgrL8KQ7hyxlqPN2dHWO12nFfNy3aACzns0PJ16W3CgOc70mlV47GdcVKLJbWQLNxCT76In+hORtWE/0PWNolkwcz2YjcsGruMPtxLEDWCrQvLbPqIStTbXBz+G+z9RCSIofkwo73elnW/4mCJt9Z2oAIbK5qA5wNm/1wuwk/cu5EeDmnDHExKs7OLrnDAPwWprdHkpkrtbRSpUTyOnHQN2C8OnC3RwTW+DG6CSteubbEZtm923wlRZ/24T2L+i6OdsLVjXjZ6is9ifrnSwAsJz8Hyz3rSZMStOEfsvryCGTrMkQmDhPqsJoeqZzybRuTYP6J25vt8y7XrO1u4oMPmhc+DnenGtDKu0Mx8e1vJd0/4SpHVwgLlRtyk9sz94UHOPKrPn/CGqHPHZG7AvpkJv595Vegl3jI4ks+dTLx/yWH/QsuL1MiAMzBn3hj1M4BFOofsYwNfLH9VKj8cXi+lptoeXdKkhYd3hdEs+fphwBqJOtU3SdUCnW+UZ8PPnVLvoOt562uxpog1GBnRIiIhq9nx5RpQTwTG91HFPfcL1Xw5R9OU8X8CbelHQVhg7qWmb7s0wqsyYTIIoj/YYQGbtWdM77cVYPfu5ValoDDUmUsYSvBHjUemffL8MZr1wwfWBFWKCahrP5BHT5LhTJwtNrppLMw==
+    AWS_SECRET_ACCESS_KEY: AgAjgJE3deTRKuMSD+WXFIvVwZnk8p35d7NzdQgkMVLT9iXfa7U3eRmn2kQN8qNtmSgi9qUlKfCaY+InyQ5sMPCyqREskkBqCaCFFO++Y4OSL4nqUQ2zJzoVPjmqZDIa+WvgaNr5eJiZJaBBPBKqP3wQgkRmXFN2hidCHft727MQFKVygIqWJZiEJBigMqN1z8E/jxjOZN8j3j5UwB1+lYq+yzaUQNYAJ+aTlMBCmMu6iWXPtS4EMWf5KuDjNXrXoyg72PFmzBAaujjeF3Z2/OjpQs6smcLu6/Gl7UX1CZPC/+1SgwP9CQPkOET3y25rTwfYlm9lpL0xQhqeMV/tOh6Ol1I/AHuxwzWzKK+GkyikKBNZYCp0/oxc5eeCtqoPKDXCfTd6r8md6J8CZ4cJhGvaR589yW5r+cIwa5DUgJwWeniFtwlBFRLffkQS8Q7utC/KubrynPU5LkFxj/R3SCIF5vD9FAjGRghE4SWklPAuN57FCsKsrDTPqap22L+fcwp3+PHxPbfdrRUeCKCuw2CqM7NvRA0aXQ2wQOc8sp2Ocu0kyQNBt9Oi87o+HioedFVDid4WtfuNrR9kfEQPDD2oxx8nxMC0v+IOtTF0VNwixwmaTuV3c6TcaON06V4/Tst7cizeqZdh6oU/Thrvpo6BkfCz4X0+R5rUYuRdOT7SMVnFJl4s7eeEWeZBJqMAjoIYVWBYIKOYehTXw/Ge6TckJYSzWB6fTTzBl2uqeiyhKAyUdRjCzZCe
+  template:
+    metadata:
+      annotations:
+        serving.kserve.io/s3-endpoint: http://rook-ceph-rgw-mlflow-store.rook-ceph.svc
+        serving.kserve.io/s3-region: us-east-1
+        serving.kserve.io/s3-useanoncredential: "false"
+        serving.kserve.io/s3-usehttps: "0"
+      name: s3creds
+      namespace: ml-serving
+    type: Opaque
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kserve-sa
+  namespace: ml-serving
+secrets:
+  - name: s3creds
+---
+apiVersion: serving.kserve.io/v1beta1
+kind: InferenceService
+metadata:
+  name: iris-floweridentifier
+  namespace: ml-serving
+spec:
+  predictor:
+    serviceAccountName: kserve-sa
+    model:
+      modelFormat:
+        name: sklearn
+      protocolVersion: v2
+      runtime: sklearn-runtime
+      storageUri: s3://mlflow-artifacts-c0ed3a95-1394-4f8e-9d77-a091c12dc77f/1/models/m-4d1d6ae52abc4d1296a2bf403ad8c92b/artifacts
+      resources:
+        requests:
+          cpu: "100m"
+          memory: "512Mi"
+        limits:
+          cpu: "1"
+          memory: "1Gi"

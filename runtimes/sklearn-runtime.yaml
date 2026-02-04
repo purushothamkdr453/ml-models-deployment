@@ -1,0 +1,26 @@
+apiVersion: serving.kserve.io/v1alpha1
+kind: ServingRuntime
+metadata:
+  name: sklearn-runtime
+  namespace: ml-serving
+spec:
+  supportedModelFormats:
+  - name: sklearn
+    version: "0"
+    autoSelect: true
+  protocolVersions:
+  - v2
+  - v1
+  containers:
+  - name: kserve-container
+    image: purushothamkdr453/sklearnserver:v1 
+    args:
+    - "--model_name={{.Name}}"
+    - "--model_dir=/mnt/models"
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "512Mi"
+      limits:
+        cpu: "1"
+        memory: "1Gi"
