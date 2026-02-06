@@ -40,7 +40,7 @@ spec:
         name: sklearn
       protocolVersion: v2
       runtime: sklearn-runtime
-      storageUri: s3://purushotham/serving/npci
+      storageUri: s3://vardhan/serving/singam
       resources:
         requests:
           cpu: "100m"
