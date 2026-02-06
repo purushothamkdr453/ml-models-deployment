@@ -40,7 +40,7 @@ spec:
         name: sklearn
       protocolVersion: v2
       runtime: sklearn-runtime
-      storageUri: s3://mlflow-artifacts-c0ed3a95-1394-4f8e-9d77-a091c12dc77f/1/models/m-4d1d6ae52abc4d1296a2bf403ad8c92b/artifacts
+      storageUri: s3://purushotham/serving/npci
       resources:
         requests:
           cpu: "100m"
