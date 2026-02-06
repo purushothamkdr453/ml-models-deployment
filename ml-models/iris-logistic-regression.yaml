@@ -18,6 +18,9 @@ spec:
       name: s3creds
       namespace: ml-serving
     type: Opaque
+  predictor:
+    model:
+      storageUri: s3://varun/serving/1
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -26,6 +29,10 @@ metadata:
   namespace: ml-serving
 secrets:
   - name: s3creds
+spec:
+  predictor:
+    model:
+      storageUri: s3://varun/serving/1
 ---
 apiVersion: serving.kserve.io/v1beta1
 kind: InferenceService
@@ -40,7 +47,7 @@ spec:
         name: sklearn
       protocolVersion: v2
       runtime: sklearn-runtime
-      storageUri: s3://mlflow-artifacts-c0ed3a95-1394-4f8e-9d77-a091c12dc77f/1/models/m-4d1d6ae52abc4d1296a2bf403ad8c92b/artifacts
+      storageUri: s3://varun/serving/1
       resources:
         requests:
           cpu: "100m"
