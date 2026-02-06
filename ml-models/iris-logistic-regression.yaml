@@ -40,7 +40,7 @@ spec:
         name: sklearn
       protocolVersion: v2
       runtime: sklearn-runtime
-      storageUri: s3://varun/serving/1
+      storageUri: s3://ml-models/floweridentifier/1
       resources:
         requests:
           cpu: "100m"
